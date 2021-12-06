@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block main %}
+<div id="app">
+    {% for save in saves[0:10] %}
+    <hr>
+    <h3><a href="https://twitter.com/{{save.includes.users[0].username}}/status/{{save.id}}">
+            {{save.includes.users[0].username}}</a></h3>
+    <img src="{{save.img}}" alt="" srcset="">
+    <div>{{save.text|urlize}}</div>
+    <div style="width: 50%;">{{save.html_content|safe}}</div>
+    <br>
+    <div>
+        {% if save.get('last_link',False) %}</li>
+        aa<img :src="imagem" alt="" srcset="">
+        
+        {%endif%}
+        <!-- <p>@{preview}</p> -->
+    </div>
+
+    <!-- {{save.last_link}} -->
+    {% endfor %}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="text/x-template" id='card-preview'>
+
+    <div>
+    <img :src="this.image" alt="" srcset="" >
+    <p> @{description} </p>
+    <p> @{title} </p>
+    </div>
+</script>
+<script>
+    const App = {
+        compilerOptions: {
+            delimiters: ['@{', '}']
+        },
+        data() {
+            return {
+                teste: "asdfasfdasdf",
+                imagem:""
+            }
+        },
+        methods: {
+            get_preview(link) {
+                if (link.search(" ") > 0 || !link) {
+                    return
+                }
+                axios.post("{{url_for('preview')}}", data = {
+                        link: link
+                    })
+                    .then(function (response) {
+                        // handle success
+                        debugger
+                        return response.data.image
+                            
+                                                    
+                        // console.log(this.description)
+                        // console.log(this.title)
+                        // console.log(this.image)
+                        // console.log(response);
+                    })
+                    .catch(function (error) {
+                        // handle error
+                        // console.log(error);
+                        this.description = 'falhou'
+                        this.title = 'falhou'
+                        this.image = 'falhou'
+                    })
+                    .then(function () {
+                        // always executed
+                    });
+            }
+        },
+        mounted(){
+            return thi.imagem = this.get_preview('{{save.get('last_link')[0]}}')
+}
+    }
+    const app = Vue.createApp(App)
+
+    app.component('card-preview', {
+        props: ['link'],
+        data() {
+            return {
+                description: "",
+                title: "",
+                image: "",
+            }
+        },
+        created() {
+            return this.get_preview(this.link)
+        },
+        methods: {
+            get_preview(link) {
+                if (link.search(" ") > 0 || !link) {
+                    return
+                }
+                axios.post("{{url_for('preview')}}", data = {
+                        link: link
+                    })
+                    .then(function (response) {
+                        // handle success
+                        // debugger
+                        this.description = response.data.description
+                        this.title = response.data.title
+                        this.image = response.data.image
+                        console.log(this.description)
+                        console.log(this.title)
+                        console.log(this.image)
+                        // console.log(response);
+                    })
+                    .catch(function (error) {
+                        // handle error
+                        // console.log(error);
+                        this.description = 'falhou'
+                        this.title = 'falhou'
+                        this.image = 'falhou'
+                    })
+                    .then(function () {
+                        // always executed
+                    });
+            }
+
+        },
+
+        template: '#card-preview'
+
+
+    })
+
+    app.mount('#app')
+</script>
+{% endblock %}
