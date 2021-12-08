@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block main %}
 <div id="app">
-    {% for save in saves[0:10] %}
+    {% for save in saves %}
     <hr>
     <h3><a href="https://twitter.com/{{save.includes.users[0].username}}/status/{{save.id}}">
             {{save.includes.users[0].username}}</a></h3>
@@ -11,7 +11,7 @@
     <br>
     <div>
         {% if save.get('last_link',False) %}</li>
-        aa<img :src="imagem" alt="" srcset="">
+        <preview :id="'{{save.id}}'"></preview>
         
         {%endif%}
         <!-- <p>@{preview}</p> -->
@@ -21,64 +21,22 @@
     {% endfor %}
 </div>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script type="text/x-template" id='card-preview'>
-
-    <div>
-    <img :src="this.image" alt="" srcset="" >
-    <p> @{description} </p>
-    <p> @{title} </p>
-    </div>
+<script type="text/x-template" id='preview'>
+    *<img :src="image" alt="" srcset="" width="450" >
+    <p>@{description}</p>
+    <p>@{title}</p>
 </script>
 <script>
     const App = {
-        compilerOptions: {
-            delimiters: ['@{', '}']
-        },
         data() {
-            return {
-                teste: "asdfasfdasdf",
-                imagem:""
-            }
+            return {}
         },
-        methods: {
-            get_preview(link) {
-                if (link.search(" ") > 0 || !link) {
-                    return
-                }
-                axios.post("{{url_for('preview')}}", data = {
-                        link: link
-                    })
-                    .then(function (response) {
-                        // handle success
-                        debugger
-                        return response.data.image
-                            
-                                                    
-                        // console.log(this.description)
-                        // console.log(this.title)
-                        // console.log(this.image)
-                        // console.log(response);
-                    })
-                    .catch(function (error) {
-                        // handle error
-                        // console.log(error);
-                        this.description = 'falhou'
-                        this.title = 'falhou'
-                        this.image = 'falhou'
-                    })
-                    .then(function () {
-                        // always executed
-                    });
-            }
-        },
-        mounted(){
-            return thi.imagem = this.get_preview('{{save.get('last_link')[0]}}')
-}
     }
     const app = Vue.createApp(App)
+    app.config.compilerOptions.delimiters = ['@{', '}']
 
-    app.component('card-preview', {
-        props: ['link'],
+    app.component('preview', {
+        props: ['id'],
         data() {
             return {
                 description: "",
@@ -87,26 +45,17 @@
             }
         },
         created() {
-            return this.get_preview(this.link)
+            this.get_preview(this.id)
         },
         methods: {
-            get_preview(link) {
-                if (link.search(" ") > 0 || !link) {
-                    return
-                }
-                axios.post("{{url_for('preview')}}", data = {
-                        link: link
-                    })
-                    .then(function (response) {
+            get_preview(id) {
+                axios.get("{{url_for('preview')}}?id="+id)
+                    .then(response => {
                         // handle success
-                        // debugger
+                        // this.requested = true
                         this.description = response.data.description
                         this.title = response.data.title
                         this.image = response.data.image
-                        console.log(this.description)
-                        console.log(this.title)
-                        console.log(this.image)
-                        // console.log(response);
                     })
                     .catch(function (error) {
                         // handle error
@@ -118,13 +67,15 @@
                     .then(function () {
                         // always executed
                     });
+            },
+            fake(){
+                debugger
+                this.description = "faked"
+                this.title = "faked"
+                this.image = "faked"
             }
-
         },
-
-        template: '#card-preview'
-
-
+        template: '#preview'
     })
 
     app.mount('#app')

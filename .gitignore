@@ -9,3 +9,7 @@ tuites.json
 feed/__pycache__/
 tests/__pycache__/
 feed/static/imgs/nevoa.jpeg
+feed/conf.py
+poetry.lock
+teste.html
+feed/conf.py
